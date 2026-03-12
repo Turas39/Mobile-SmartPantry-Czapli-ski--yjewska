@@ -9,4 +9,4 @@ data class Product(
     val quantity: Int,
     val category: String,
     val imageRef: String
-)
+) : java.io.Serializable

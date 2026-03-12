@@ -12,7 +12,6 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
-import java.io.InputStreamReader
 import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
@@ -21,10 +20,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: PantryAdapter
     lateinit var binding: ActivityMainBinding
 
+    private var currentQuery: String = ""
+    private var currentCategory: String = "all"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        binding= ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -32,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        adapter = PantryAdapter(this, mutableListOf())
+        adapter = PantryAdapter(this, mutableListOf()) { saveInventoryToJsonFile() }
         binding.productListView.adapter = adapter
 
         setupSearchView()
@@ -40,19 +42,25 @@ class MainActivity : AppCompatActivity() {
         loadInventoryFromJsonFile()
     }
 
-    private fun searchName(query: String): List<Product> {
-        return inventoryList.filter { it.name.contains(query, ignoreCase = true) }
+    private fun applyFilters() {
+        var filtered = when (currentCategory) {
+            "food" -> inventoryList.filter { it.category.equals("Food", true) }
+            "oxygen" -> inventoryList.filter { it.category.equals("Life Support", true) }
+            else -> inventoryList.toList()
+        }
+        if (currentQuery.isNotEmpty()) {
+            filtered = filtered.filter { it.name.contains(currentQuery, ignoreCase = true) }
+        }
+        adapter.updateList(filtered)
     }
 
     private fun setupSearchView() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
+            override fun onQueryTextSubmit(query: String?): Boolean = false
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                val filteredList = if (!newText.isNullOrEmpty()) searchName(newText) else inventoryList
-                adapter.updateList(filteredList)
+                currentQuery = newText ?: ""
+                applyFilters()
                 return true
             }
         })
@@ -66,7 +74,7 @@ class MainActivity : AppCompatActivity() {
             val jsonString = if (file.exists()) {
                 file.readText()
             } else {
-                resources.openRawResource(R.raw.pantry).bufferedReader().use { it.readText()}
+                resources.openRawResource(R.raw.pantry).bufferedReader().use { it.readText() }
             }
 
             val loadedList = json.decodeFromString<List<Product>>(jsonString)
@@ -90,32 +98,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun filterFood(): List<Product> {
-        return inventoryList.filter { it.category.equals("Food", true) }
-    }
-
-    private fun filterOxygen(): List<Product> {
-        return inventoryList.filter { it.category.equals("Life Support", true) }
-    }
-
     private fun setupRadioFilters() {
-
         binding.filterGroup.setOnCheckedChangeListener { _, checkedId ->
-
-            val filteredList = when (checkedId) {
-
-                R.id.foodRadio -> filterFood()
-
-                R.id.oxygenRadio -> filterOxygen()
-
-                R.id.allRadio -> inventoryList
-
-                else -> inventoryList
+            currentCategory = when (checkedId) {
+                R.id.foodRadio -> "food"
+                R.id.oxygenRadio -> "oxygen"
+                else -> "all"
             }
-
-            adapter.updateList(filteredList)
+            applyFilters()
         }
     }
-
-
 }

@@ -5,14 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import android.widget.ImageView
 import com.example.mobile_smart_pantry_project_iv.model.Product
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.io.File
 
 class PantryAdapter(
     private val context: Context,
-    private val products: MutableList<Product>
+    private val products: MutableList<Product>,
+    private val onDataChanged: () -> Unit
 ) : BaseAdapter() {
 
     private val inflater = LayoutInflater.from(context)
@@ -35,39 +34,38 @@ class PantryAdapter(
         quantityText.text = product.quantity.toString()
         categoryText.text = product.category.capitalize()
 
+        val productImage = view.findViewById<ImageView>(R.id.productImage)
+
+        val imageResId = context.resources.getIdentifier(
+            product.imageRef, "drawable", context.packageName
+        )
+        if (imageResId != 0) {
+            productImage.setImageResource(imageResId)
+        } else {
+            productImage.setImageResource(android.R.drawable.ic_menu_gallery)
+        }
+
         addButton.setOnClickListener {
             products[position] = product.copy(quantity = product.quantity + 1)
             notifyDataSetChanged()
-            saveInventoryToJsonFile()
+            onDataChanged()
         }
 
         consumeButton.setOnClickListener {
             if (product.quantity > 0) {
                 products[position] = product.copy(quantity = product.quantity - 1)
                 notifyDataSetChanged()
-                saveInventoryToJsonFile()
+                onDataChanged()
             }
         }
 
-        if (product.quantity <= 3) {
+        if (product.quantity < 5) {
             quantityText.setTextColor(android.graphics.Color.RED)
         } else {
             quantityText.setTextColor(android.graphics.Color.WHITE)
         }
 
-
         return view
-    }
-
-    private fun saveInventoryToJsonFile() {
-        try {
-            val json = Json { prettyPrint = true }
-            val jsonString = json.encodeToString(products)
-            val file = File(context.filesDir, "inventory.json")
-            file.writeText(jsonString)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
     }
 
     fun updateList(newList: List<Product>) {
