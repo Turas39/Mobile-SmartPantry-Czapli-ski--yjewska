@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
     private fun saveInventoryToJsonFile() {
         try {
             val json = Json { prettyPrint = true }
-            val jsonString = json.encodeToString(inventoryLis)
+            val jsonString = json.encodeToString(inventoryList)
             val file = File(filesDir, "inventory.json")
             file.writeText(jsonString)
         } catch (e: Exception) {
