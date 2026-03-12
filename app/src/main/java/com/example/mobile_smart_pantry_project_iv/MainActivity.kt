@@ -1,6 +1,7 @@
 package com.example.mobile_smart_pantry_project_iv
 
 import android.os.Bundle
+import android.widget.SearchView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -11,6 +12,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.io.InputStreamReader
 import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
@@ -33,7 +35,27 @@ class MainActivity : AppCompatActivity() {
         adapter = PantryAdapter(this, inventoryList)
         binding.productListView.adapter = adapter
 
+        setupSearchView()
+
         loadInventoryFromJsonFile()
+    }
+
+    private fun searchName(query: String): List<Product> {
+        return inventoryList.filter { it.name.contains(query, ignoreCase = true) }
+    }
+
+    private fun setupSearchView() {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                val filteredList = if (!newText.isNullOrEmpty()) searchName(newText) else inventoryList
+                adapter.updateList(filteredList)
+                return true
+            }
+        })
     }
 
     private fun loadInventoryFromJsonFile() {

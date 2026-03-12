@@ -10,7 +10,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/text_title"
+        android:id="@+id/textTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Zapasy"
@@ -26,27 +26,28 @@
         android:orientation="horizontal">
 
         <RadioGroup
+            android:id="@+id/filterGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
 
             <RadioButton
-                android:id="@+id/food_radio"
+                android:id="@+id/foodRadio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tylko jedzenie"
                 android:layout_margin="8dp"/>
 
             <RadioButton
-                android:id="@+id/oxygen_radio"
+                android:id="@+id/oxygenRadio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tylko tlen"
                 android:layout_margin="8dp"/>
 
             <RadioButton
-                android:id="@+id/all_radio"
+                android:id="@+id/allRadio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Wszystko"
@@ -58,7 +59,7 @@
     </LinearLayout>
 
     <SearchView
-        android:id="@+id/search_"
+        android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
