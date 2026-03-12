@@ -10,10 +10,11 @@ import com.example.mobile_smart_pantry_project_iv.model.Product
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
 
-    private val inventoryLis = mutableListOf<Product>()
+    private val inventoryList = mutableListOf<Product>()
 
     lateinit var binding: ActivityMainBinding
 
@@ -27,6 +28,27 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        binding.addButton.setOnClickListener {
+            val name = binding.nameEditText.text.toString()
+            val quantity = binding.quantityEditText.text.toString().toInt()
+            val category = binding.categorySpinner.selectedItem.toString()
+
+            val product = Product (
+                uuid = UUID.randomUUID().toString(),
+                name = name,
+                quantity = quantity,
+                category = category,
+                imageRef = ""
+            )
+
+            inventoryList.add(product)
+
+            productTitles.add("${product.name} (${product.quantity})")
+            listAdapter.notifyDataSetChanged()
+        }
+
+
     }
 
     private fun saveInventoryToJsonFile() {
