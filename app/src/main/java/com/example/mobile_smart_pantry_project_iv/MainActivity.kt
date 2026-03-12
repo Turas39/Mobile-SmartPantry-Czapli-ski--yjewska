@@ -48,7 +48,19 @@ class MainActivity : AppCompatActivity() {
             listAdapter.notifyDataSetChanged()
         }
 
+        binding.consumeButton.setOnClickListener {
+            val position = binding.productListView.checkedItemPosition
+            if(position != -1) {
+                val product = inventoryList[position]
 
+                val updateProduct = product.copy(
+                    quantity = product.quantity - 1
+                )
+                inventoryList[position] = updateProduct
+                productTitles[position] = "${updateProduct.name} (${updateProduct.quantity})"
+                listAdapter.notifyDataSetChanged()
+            }
+        }
     }
 
     private fun saveInventoryToJsonFile() {
