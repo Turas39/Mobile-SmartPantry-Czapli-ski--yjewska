@@ -32,11 +32,11 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        adapter = PantryAdapter(this, inventoryList)
+        adapter = PantryAdapter(this, mutableListOf())
         binding.productListView.adapter = adapter
 
         setupSearchView()
-
+        setupRadioFilters()
         loadInventoryFromJsonFile()
     }
 
@@ -75,6 +75,8 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+        adapter.updateList(inventoryList)
     }
 
     private fun saveInventoryToJsonFile() {
@@ -87,4 +89,33 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
+
+    private fun filterFood(): List<Product> {
+        return inventoryList.filter { it.category.equals("Food", true) }
+    }
+
+    private fun filterOxygen(): List<Product> {
+        return inventoryList.filter { it.category.equals("Life Support", true) }
+    }
+
+    private fun setupRadioFilters() {
+
+        binding.filterGroup.setOnCheckedChangeListener { _, checkedId ->
+
+            val filteredList = when (checkedId) {
+
+                R.id.foodRadio -> filterFood()
+
+                R.id.oxygenRadio -> filterOxygen()
+
+                R.id.allRadio -> inventoryList
+
+                else -> inventoryList
+            }
+
+            adapter.updateList(filteredList)
+        }
+    }
+
+
 }
