@@ -49,6 +49,13 @@ class PantryAdapter(
             }
         }
 
+        if (product.quantity <= 3) {
+            quantityText.setTextColor(android.graphics.Color.RED)
+        } else {
+            quantityText.setTextColor(android.graphics.Color.WHITE)
+        }
+
+
         return view
     }
 
