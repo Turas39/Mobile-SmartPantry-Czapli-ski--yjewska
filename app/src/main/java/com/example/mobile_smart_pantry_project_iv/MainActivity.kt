@@ -2,6 +2,7 @@ package com.example.mobile_smart_pantry_project_iv
 
 import android.os.Bundle
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -23,6 +24,26 @@ class MainActivity : AppCompatActivity() {
     private var currentQuery: String = ""
     private var currentCategory: String = "all"
 
+
+    private val addProductLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val newProduct = if (android.os.Build.VERSION.SDK_INT >= 33) {
+                result.data?.getSerializableExtra(Keys.NEW_PRODUCT, Product::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                result.data?.getSerializableExtra(Keys.NEW_PRODUCT) as? Product
+            }
+            if (newProduct != null) {
+                inventoryList.add(newProduct)
+                saveInventoryToJsonFile()
+                applyFilters()
+                Toast.makeText(this, "Dodano: ${newProduct.name}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -40,6 +61,11 @@ class MainActivity : AppCompatActivity() {
         setupSearchView()
         setupRadioFilters()
         loadInventoryFromJsonFile()
+
+        binding.addProductButton.setOnClickListener {
+            val intent = android.content.Intent(this, AddProductActivity::class.java)
+            addProductLauncher.launch(intent)
+        }
     }
 
     private fun applyFilters() {

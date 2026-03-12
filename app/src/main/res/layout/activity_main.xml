@@ -63,6 +63,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <Button
+        android:id="@+id/addProductButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dodaj produkt"
+        android:backgroundTint="#D90F0F"
+        android:textColor="#FFFFFF"
+        android:layout_margin="8dp"/>
+
     <ListView
         android:id="@+id/productListView"
         android:layout_width="match_parent"

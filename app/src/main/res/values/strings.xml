@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">mobile-smart-pantry-project-iv</string>
+
+    <string-array name="product_categories">
+        <item>Food</item>
+        <item>Life Support</item>
+        <item>Tools</item>
+    </string-array>
 </resources>
