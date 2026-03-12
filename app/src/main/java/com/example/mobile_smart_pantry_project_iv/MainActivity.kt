@@ -6,8 +6,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.mobile_smart_pantry_project_iv.databinding.ActivityMainBinding
+import com.example.mobile_smart_pantry_project_iv.model.Product
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
+
+    private val inventoryLis = mutableListOf<Product>()
 
     lateinit var binding: ActivityMainBinding
 
@@ -20,6 +26,17 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+    }
+
+    private fun saveInventoryToJsonFile() {
+        try {
+            val json = Json { prettyPrint = true }
+            val jsonString = json.encodeToString(inventoryLis)
+            val file = File(filesDir, "inventory.json")
+            file.writeText(jsonString)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }
