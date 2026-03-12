@@ -1,0 +1,16 @@
+[
+  {
+    "uuid": "1",
+    "name": "Freeze-dried Pizza",
+    "quantity": 10,
+    "category": "Food",
+    "imageRef": "pizza"
+  },
+  {
+    "uuid": "2",
+    "name": "Oxygen Tank",
+    "quantity": 4,
+    "category": "Life Support",
+    "imageRef": "oxygen"
+  }
+]

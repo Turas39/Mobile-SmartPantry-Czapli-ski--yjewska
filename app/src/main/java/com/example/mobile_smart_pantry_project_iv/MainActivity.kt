@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
             )
 
             inventoryList.add(product)
+            saveInventoryToJsonFile()
 
             productTitles.add("${product.name} (${product.quantity})")
             listAdapter.notifyDataSetChanged()
@@ -60,6 +61,7 @@ class MainActivity : AppCompatActivity() {
                 inventoryList[position] = updateProduct
                 productTitles[position] = "${updateProduct.name} (${updateProduct.quantity})"
                 listAdapter.notifyDataSetChanged()
+                saveInventoryToJsonFile()
             }
         }
 
@@ -70,9 +72,13 @@ class MainActivity : AppCompatActivity() {
     private fun loadInventoryFromJsonFile() {
         try {
             val file = File(filesDir, "inventory.json")
-            if (!file.exists()) return
-            val jsonString = file.readText()
             val json = Json { ignoreUnknownKeys = true }
+
+            val jsonString = if (file.exists()) {
+                file.readText()
+            } else {
+                resources.openRawResource(R.raw.pantry).bufferedReader().use { it.readText()}
+            }
 
             val loadedList = json.decodeFromString<List<Product>>(jsonString)
             inventoryList.clear()
@@ -85,7 +91,7 @@ class MainActivity : AppCompatActivity() {
     private fun saveInventoryToJsonFile() {
         try {
             val json = Json { prettyPrint = true }
-            val jsonString = json.encodeToString(inventoryLis)
+            val jsonString = json.encodeToString(inventoryList)
             val file = File(filesDir, "inventory.json")
             file.writeText(jsonString)
         } catch (e: Exception) {
