@@ -7,6 +7,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.mobile_smart_pantry_project_iv.databinding.ActivityMainBinding
 import com.example.mobile_smart_pantry_project_iv.model.Product
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -60,6 +61,24 @@ class MainActivity : AppCompatActivity() {
                 productTitles[position] = "${updateProduct.name} (${updateProduct.quantity})"
                 listAdapter.notifyDataSetChanged()
             }
+        }
+
+
+        loadInventoryFromJsonFile()
+    }
+
+    private fun loadInventoryFromJsonFile() {
+        try {
+            val file = File(filesDir, "inventory.json")
+            if (!file.exists()) return
+            val jsonString = file.readText()
+            val json = Json { ignoreUnknownKeys = true }
+
+            val loadedList = json.decodeFromString<List<Product>>(jsonString)
+            inventoryList.clear()
+            inventoryList.addAll(loadedList)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
